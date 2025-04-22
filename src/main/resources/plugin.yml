@@ -1,0 +1,7 @@
+name: jk_scheduler
+version: '${project.version}'
+main: jiekie.SchedulerPlugin
+api-version: '1.20'
+authors: [Jiekie]
+description: 스케줄러 플러그인
+depend: [jk_clean]
