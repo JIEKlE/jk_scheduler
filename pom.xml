@@ -12,7 +12,7 @@
   <name>jk_scheduler</name>
 
   <properties>
-    <java.version>1.8</java.version>
+    <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -58,6 +58,10 @@
           <id>sonatype</id>
           <url>https://oss.sonatype.org/content/groups/public/</url>
       </repository>
+      <repository>
+          <id>jitpack.io</id>
+          <url>https://jitpack.io</url>
+      </repository>
   </repositories>
 
   <dependencies>
@@ -65,6 +69,18 @@
           <groupId>org.spigotmc</groupId>
           <artifactId>spigot-api</artifactId>
           <version>1.20.1-R0.1-SNAPSHOT</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>com.github.JIEKlE</groupId>
+          <artifactId>jk_multi_world</artifactId>
+          <version>v1.0.2</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>com.github.JIEKlE</groupId>
+          <artifactId>jk_teleport</artifactId>
+          <version>v1.0.1</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>

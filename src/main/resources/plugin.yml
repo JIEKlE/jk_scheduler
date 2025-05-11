@@ -4,4 +4,11 @@ main: jiekie.SchedulerPlugin
 api-version: '1.20'
 authors: [Jiekie]
 description: 스케줄러 플러그인
-depend: [jk_clean]
+depend: [jk_clean, jk_multi_world, jk_teleport]
+commands:
+  배치:
+    description: 배치 설정 명령어
+    usage: /배치
+    tab-completer: jiekie.jiekie.completer.SchedulerTabCompleter
+    permission: jk.scheduler
+    permission-message: ''

@@ -1,0 +1,20 @@
+# 월드 초기화 (단위 : 1일)
+world_reset_activate: false
+world_reset_interval: 1
+world_reset_last_date: 20250510 030000
+
+# 서버 자동 종료
+server_auto_stop_activate: false
+server_auto_stop_time: 01:00:00
+
+# 청소 주기 (단위 : 분)
+clean_activate: false
+clean_interval: 30
+
+# 부자 동상 생성 주기 (단위 : 일)
+wealthy_statue_create_activate: false
+wealthy_statue_create_interval: 1
+
+# 이동권 주기 (단위 : 분)
+wild_warp_ticket_timer: 30
+hell_warp_ticket_timer: 30
