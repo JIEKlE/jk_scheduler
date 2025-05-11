@@ -72,8 +72,7 @@ public class PlayerSchedulerManager {
 
     private void resetRemainingTime(Player player) {
         UUID uuid = player.getUniqueId();
-        if(remainingTime.containsKey(uuid))
-            remainingTime.remove(uuid);
+        remainingTime.remove(uuid);
     }
 
     public void stopWorldTimer(Player player) {

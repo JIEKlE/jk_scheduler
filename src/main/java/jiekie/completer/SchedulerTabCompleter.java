@@ -1,6 +1,5 @@
 package jiekie.completer;
 
-import jiekie.SchedulerPlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -13,11 +12,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class SchedulerTabCompleter implements TabCompleter {
-    private final SchedulerPlugin plugin;
-
-    public SchedulerTabCompleter(SchedulerPlugin plugin) {
-        this.plugin = plugin;
-    }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -31,14 +25,12 @@ public class SchedulerTabCompleter implements TabCompleter {
 
         String commandType = args[0];
         if(length == 2) {
-            if(commandType.equals("활성화") || commandType.equals("비활성화"))
-                return Arrays.asList("월드초기화", "서버자동종료", "청소", "부자동상생성");
+            switch (commandType) {
+                case "활성화", "비활성화" -> { return Arrays.asList("월드초기화", "서버자동종료", "청소", "부자동상생성"); }
+                case "주기설정" -> { return Arrays.asList("월드초기화", "청소", "부자동상생성", "야생이용시간", "지옥이용시간"); }
+                case "시각설정" -> { return Arrays.asList("서버자동종료"); }
+            }
 
-            if(commandType.equals("주기설정"))
-                return Arrays.asList("월드초기화", "청소", "부자동상생성", "야생이용시간", "지옥이용시간");
-
-            if(commandType.equals("시각설정"))
-                return Arrays.asList("서버자동종료");
         }
 
         String schedulerType = args[1];

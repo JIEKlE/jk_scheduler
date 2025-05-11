@@ -52,7 +52,7 @@ public class SchedulerCommand implements CommandExecutor {
                 break;
 
             case "정보":
-                showInfo(player, args);
+                showInfo(player);
                 break;
 
             case "도움말":
@@ -116,7 +116,7 @@ public class SchedulerCommand implements CommandExecutor {
         }
     }
 
-    private void showInfo(Player player, String[] args) {
+    private void showInfo(Player player) {
         ChatUtil.schedulerInfoPrefix(player);
         plugin.getSchedulerManager().showInfo(player);
         ChatUtil.horizontalLineSuffix(player);

@@ -26,7 +26,7 @@ public final class SchedulerPlugin extends JavaPlugin {
         getCommand("배치").setExecutor(new SchedulerCommand(this));
 
         // tab completer
-        getCommand("배치").setTabCompleter(new SchedulerTabCompleter(this));
+        getCommand("배치").setTabCompleter(new SchedulerTabCompleter());
 
         // event
         getServer().getPluginManager().registerEvents(new PlayerEvent(this), this);
