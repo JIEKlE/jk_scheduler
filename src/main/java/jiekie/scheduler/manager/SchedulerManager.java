@@ -1,12 +1,12 @@
 package jiekie.scheduler.manager;
 
+import jiekie.multiworld.api.MultiWorldAPI;
+import jiekie.multiworld.exception.WorldResetException;
 import jiekie.scheduler.SchedulerPlugin;
-import jiekie.api.MultiWorldAPI;
-import jiekie.api.TeleportAPI;
 import jiekie.scheduler.exception.SchedulerException;
-import jiekie.exception.WorldResetException;
 import jiekie.scheduler.util.ChatUtil;
 import jiekie.scheduler.util.SoundUtil;
+import jiekie.teleport.api.TeleportAPI;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
