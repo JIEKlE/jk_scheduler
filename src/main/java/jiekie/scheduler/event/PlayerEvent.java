@@ -1,6 +1,6 @@
-package jiekie.event;
+package jiekie.scheduler.event;
 
-import jiekie.SchedulerPlugin;
+import jiekie.scheduler.SchedulerPlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;

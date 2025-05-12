@@ -18,3 +18,6 @@ wealthy_statue_create_interval: 1
 # 이동권 주기 (단위 : 분)
 wild_warp_ticket_timer: 30
 hell_warp_ticket_timer: 30
+
+# 이동권 남은 시간
+remaining_time: {}

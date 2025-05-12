@@ -1,10 +1,11 @@
-package jiekie;
+package jiekie.scheduler;
 
-import jiekie.command.SchedulerCommand;
-import jiekie.completer.SchedulerTabCompleter;
-import jiekie.event.PlayerEvent;
-import jiekie.manager.PlayerSchedulerManager;
-import jiekie.manager.SchedulerManager;
+import jiekie.scheduler.command.SchedulerCommand;
+import jiekie.scheduler.completer.SchedulerTabCompleter;
+import jiekie.scheduler.event.PlayerEvent;
+import jiekie.scheduler.manager.PlayerSchedulerManager;
+import jiekie.scheduler.manager.SchedulerManager;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SchedulerPlugin extends JavaPlugin {
@@ -21,6 +22,7 @@ public final class SchedulerPlugin extends JavaPlugin {
         schedulerManager = new SchedulerManager(this);
         schedulerManager.init();
         playerSchedulerManager = new PlayerSchedulerManager(this);
+        playerSchedulerManager.load();
 
         // command
         getCommand("배치").setExecutor(new SchedulerCommand(this));
@@ -42,5 +44,15 @@ public final class SchedulerPlugin extends JavaPlugin {
     public PlayerSchedulerManager getPlayerSchedulerManager() {return playerSchedulerManager;}
 
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+        kickPlayers();
+        playerSchedulerManager.save();
+    }
+
+    private void kickPlayers() {
+        for(Player player : getServer().getOnlinePlayers()) {
+            if(player.isOp()) return;
+            player.kickPlayer("서버 점검을 시작했습니다. 디스코드에서 운영자 공지를 확인한 뒤 접속하세요.");
+        }
+    }
 }

@@ -1,9 +1,9 @@
-package jiekie.command;
+package jiekie.scheduler.command;
 
-import jiekie.SchedulerPlugin;
-import jiekie.exception.SchedulerException;
-import jiekie.util.ChatUtil;
-import jiekie.util.SoundUtil;
+import jiekie.scheduler.SchedulerPlugin;
+import jiekie.scheduler.exception.SchedulerException;
+import jiekie.scheduler.util.ChatUtil;
+import jiekie.scheduler.util.SoundUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

@@ -1,9 +1,10 @@
-package jiekie.manager;
+package jiekie.scheduler.manager;
 
-import jiekie.SchedulerPlugin;
+import jiekie.scheduler.SchedulerPlugin;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,6 +25,17 @@ public class PlayerSchedulerManager {
         remainingTime = new HashMap<>();
         tasks = new HashMap<>();
         targetWorlds = List.of("wild", "hell");
+    }
+
+    public void load() {
+        remainingTime.clear();
+        ConfigurationSection section = config.getConfigurationSection("remaining_time");
+        if(section == null) return;
+        for(String uuidString : section.getKeys(false)) {
+            UUID uuid = UUID.fromString(uuidString);
+            int remaining = section.getInt(uuidString);
+            remainingTime.put(uuid, remaining);
+        }
     }
 
     public void startWorldTimer(Player player) {
@@ -81,5 +93,15 @@ public class PlayerSchedulerManager {
             tasks.get(uuid).cancel();
             tasks.remove(uuid);
         }
+    }
+
+    public void save() {
+        if(remainingTime.isEmpty()) return;
+        for(UUID uuid : remainingTime.keySet()) {
+            int remaining = remainingTime.get(uuid);
+            config.set("remaining_time." + uuid.toString(), remaining);
+        }
+
+        plugin.saveConfig();
     }
 }

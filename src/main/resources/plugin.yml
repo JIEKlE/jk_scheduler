@@ -1,6 +1,6 @@
 name: jk_scheduler
 version: '${project.version}'
-main: jiekie.SchedulerPlugin
+main: jiekie.scheduler.SchedulerPlugin
 api-version: '1.20'
 authors: [Jiekie]
 description: 스케줄러 플러그인
@@ -9,6 +9,6 @@ commands:
   배치:
     description: 배치 설정 명령어
     usage: /배치
-    tab-completer: jiekie.jiekie.completer.SchedulerTabCompleter
+    tab-completer: jiekie.jiekie.scheduler.completer.SchedulerTabCompleter
     permission: jk.scheduler
     permission-message: ''
