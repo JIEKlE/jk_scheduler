@@ -7,13 +7,19 @@ import jiekie.nickname.api.NicknameAPI;
 import jiekie.nickname.model.PlayerNameData;
 import jiekie.scheduler.SchedulerPlugin;
 import jiekie.scheduler.exception.SchedulerException;
+import jiekie.scheduler.model.SchedulerType;
 import jiekie.scheduler.util.ChatUtil;
 import jiekie.scheduler.util.NumberUtil;
 import jiekie.scheduler.util.SoundUtil;
 import jiekie.teleport.api.TeleportAPI;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.npc.NPCRegistry;
+import net.citizensnpcs.trait.SkinTrait;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -42,33 +48,26 @@ public class SchedulerManager {
         worldReset();
         serverAutoStop();
         clean();
-        createWealthyStatue();
         churchBellSound();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                createWealthyStatue();
+            }
+        }.runTaskLater(plugin, 20L * 3);
     }
 
     public void activateScheduler(String schedulerName, boolean activate) throws SchedulerException {
-        switch (schedulerName) {
-            case "월드초기화" -> {
-                config.set("world_reset_activate", activate);
-                worldReset();
-            }
-            case "서버자동종료" -> {
-                config.set("server_auto_stop_activate", activate);
-                serverAutoStop();
-            }
-            case "청소" -> {
-                config.set("clean_activate", activate);
-                clean();
-            }
-            case "정각타종음" -> {
-                config.set("church_bell_sound_activate", activate);
-                churchBellSound();
-            }
-            case "부자동상생성" -> {
-                config.set("wealthy_statue_create_activate", activate);
-                createWealthyStatue();
-            }
-            default -> throw new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER);
+        SchedulerType type = SchedulerType.fromDisplayName(schedulerName).orElseThrow(() -> new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER));
+
+        config.set(type.getConfigKey() + "_activate", activate);
+        switch (type) {
+            case WORLD_RESET -> worldReset();
+            case SERVER_AUTO_STOP -> serverAutoStop();
+            case CLEAN -> clean();
+            case CHURCH_BELL_SOUND -> churchBellSound();
+            case WEALTHY_STATUE_CREATE -> createWealthyStatue();
         }
 
         plugin.saveConfig();
@@ -76,22 +75,14 @@ public class SchedulerManager {
 
     public void setInterval(String schedulerName, String intervalString) throws SchedulerException {
         int interval = NumberUtil.getIntervalFromString(intervalString);
-        switch (schedulerName) {
-            case "월드초기화" -> {
-                config.set("world_reset_interval", interval);
-                worldReset();
-            }
-            case "청소" -> {
-                config.set("clean_interval", interval);
-                clean();
-            }
-            case "부자동상생성" -> {
-                config.set("wealthy_statue_create_interval", interval);
-                createWealthyStatue();
-            }
-            case "야생이용시간" -> config.set("wild_warp_ticket_timer", interval);
-            case "지옥이용시간" -> config.set("hell_warp_ticket_timer", interval);
-            default -> throw new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER);
+
+        SchedulerType type = SchedulerType.fromDisplayName(schedulerName).orElseThrow(() -> new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER));
+        config.set(type.getConfigKey() + "_interval", interval);
+        switch (type) {
+            case WORLD_RESET -> worldReset();
+            case CLEAN -> clean();
+            case WEALTHY_STATUE_CREATE -> createWealthyStatue();
+            case WILD_WARP_TICKET, HELL_WARP_TICKET -> {}
         }
 
         plugin.saveConfig();
@@ -105,28 +96,23 @@ public class SchedulerManager {
             throw new SchedulerException(ChatUtil.INVALID_TIME);
         }
 
-        switch (schedulerName) {
-            case "서버자동종료" -> {
-                config.set("server_auto_stop_time", time);
-                serverAutoStop();
-            }
-            default -> throw new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER);
-        }
+        SchedulerType type = SchedulerType.fromDisplayName(schedulerName).orElseThrow(() -> new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER));
+        if(type != SchedulerType.SERVER_AUTO_STOP)
+            throw new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER);
 
+        config.set(type.getConfigKey() + "_time", time);
+        serverAutoStop();
         plugin.saveConfig();
     }
 
     public void setLocation(String schedulerName, World world, String xString, String yString, String zString) throws SchedulerException {
-        String path;
-        switch (schedulerName) {
-            case "정각타종음" -> {
-                path = "church_bell_sound_location";
-                churchBellSound();
-            }
-            default -> throw new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER);
-        }
+        SchedulerType type = SchedulerType.fromDisplayName(schedulerName).orElseThrow(() -> new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER));
+        if(type != SchedulerType.CHURCH_BELL_SOUND)
+            throw new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER);
 
+        String path = type.getConfigKey() + "_location";
         saveCoordinates(path, world, xString, yString, zString);
+        churchBellSound();
     }
 
     public void setStatueLocation(String rankString, World world, String xString, String yString, String zString) throws SchedulerException {
@@ -137,16 +123,12 @@ public class SchedulerManager {
     }
 
     public void setSoundEffect(String schedulerName, String sound, String volumeString, String secondsString) throws SchedulerException {
-        String path;
-        switch (schedulerName) {
-            case "정각타종음" -> {
-                path = "church_bell_sound";
-                churchBellSound();
-            }
-            default -> throw new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER);
-        }
+        SchedulerType type = SchedulerType.fromDisplayName(schedulerName).orElseThrow(() -> new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER));
+        if(type != SchedulerType.CHURCH_BELL_SOUND)
+            throw new SchedulerException(ChatUtil.NO_SUCH_SCHEDULER);
 
-        saveSoundEffect(path, sound, volumeString, secondsString);
+        saveSoundEffect(type.getConfigKey(), sound, volumeString, secondsString);
+        churchBellSound();
     }
 
     public void showInfo(Player player) {
@@ -320,17 +302,10 @@ public class SchedulerManager {
 
                 LocalDateTime resetDateTime = now.atStartOfDay();
                 config.set(taskName + "_last_date", resetDateTime.format(formatter));
-                plugin.saveConfig();
 
                 // remove old statue
-                ConfigurationSection nameSection = config.getConfigurationSection(taskName + "_names");
-                for(String rank : nameSection.getKeys(false)) {
-                    String npcName = nameSection.getString(rank);
-                    npcName = npcName.replaceAll("§", "&");
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "npc select " + npcName);
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "npc remove");
-                }
-                config.set(taskName + "_names", null);
+                removeNpcs(taskName);
+                plugin.saveConfig();
 
                 // create new statue
                 ConfigurationSection locationSection = config.getConfigurationSection(taskName + "_locations");
@@ -343,54 +318,11 @@ public class SchedulerManager {
                 }
                 if(count == 0) return;
 
-                Map<Integer, UUID> topRichestPlayers = MoneyAPI.getInstance().getTopRichestPlayers(count);
-                for(String rankString : locationSection.getKeys(false)) {
-                    int rank = Integer.parseInt(rankString);
-                    if(!topRichestPlayers.containsKey(rank)) continue;
-
-                    // name
-                    UUID uuid = topRichestPlayers.get(rank);
-                    PlayerNameData playerNameData = NicknameAPI.getInstance().getPlayerNameData(uuid);
-                    String name = Bukkit.getOfflinePlayer(uuid).getName();
-                    String nickname = Bukkit.getOfflinePlayer(uuid).getName();
-                    if(playerNameData != null)
-                        nickname = playerNameData.getNickname();
-                    String statueName = getStatueName(rank, nickname);
-
-                    // coordinates
-                    String worldName = locationSection.getString(rankString + ".world", null);
-                    if(worldName == null) continue;
-                    World world = Bukkit.getWorld(worldName);
-                    if(world == null) continue;
-
-                    double x = locationSection.getDouble(rankString + ".x", 0.0);
-                    double y = locationSection.getDouble(rankString + ".y", 0.0);
-                    double z = locationSection.getDouble(rankString + ".z", 0.0);
-
-                    String locationChat = x + "," + y + "," + z + "," + worldName;
-
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "npc create " + statueName + " --at " + locationChat);
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "npc skin " + name);
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "npc look");
-                    if(rank == 1)
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "npc sitting");
-
-                    config.set(taskName + "_names." + rankString, statueName);
-                }
-                plugin.saveConfig();
+                createNpcs(taskName, count);
             }
         }.runTaskTimer(plugin, 0L, 20L * 60 * 60);
 
         tasks.put(taskName, task);
-    }
-
-    private String getStatueName(int rank, String name) {
-        ChatColor color;
-        if(rank % 3 == 1) color = ChatColor.YELLOW;
-        else if(rank % 3 == 2) color = ChatColor.GREEN;
-        else color = ChatColor.WHITE;
-
-        return "[ " + color + rank + ChatColor.WHITE + "위 부자 ] " + name;
     }
 
     private void churchBellSound() {
@@ -400,21 +332,14 @@ public class SchedulerManager {
         boolean activate = config.getBoolean(taskName + "_activate", false);
         if(!activate) return;
 
-        String worldName = config.getString(taskName + "_location.world", null);
-        if(worldName == null) return;
-        World world = Bukkit.getWorld(worldName);
-        if(world == null) return;
-
-        double x = config.getDouble(taskName + "_location.x", 0.0);
-        double y = config.getDouble(taskName + "_location.y", 0.0);
-        double z = config.getDouble(taskName + "_location.z", 0.0);
-
         String sound = config.getString(taskName + "_name", null);
         if(sound == null) return;
         float volume = (float) config.getDouble(taskName + "_volume", 0.0);
         int seconds = config.getInt(taskName + "_length", 1);
 
-        Location location = new Location(world, x, y, z);
+        Location location = getLocationFromConfig(taskName + "_location");
+        if(location == null) return;
+
         BukkitTask task = new BukkitRunnable() {
             int lastHour = -1;
 
@@ -432,22 +357,6 @@ public class SchedulerManager {
         }.runTaskTimer(plugin, 0L, 20L);
 
         tasks.put(taskName, task);
-    }
-
-    private void playChurchBell(int currentHour, Location location, String sound, float volume, int seconds) {
-        new BukkitRunnable() {
-            final int totalCount = currentHour;
-            int playedCount = 1;
-
-            @Override
-            public void run() {
-                if(playedCount == totalCount)
-                    cancel();
-
-                SoundUtil.playSoundAtWorld(location, sound, volume);
-                playedCount++;
-            }
-        }.runTaskTimer(plugin, 0L, 20L * seconds);
     }
 
     private void resetSpawnCoordinates(String worldName) {
@@ -491,6 +400,96 @@ public class SchedulerManager {
         }
 
         TeleportAPI.getInstance().setLocation(locationName, location);
+    }
+
+    private void removeNpcs(String taskName) {
+        ConfigurationSection idSection = config.getConfigurationSection(taskName + "_ids");
+        if(idSection == null) return;
+
+        NPCRegistry npcRegistry = CitizensAPI.getNPCRegistry();
+        for(String rank : idSection.getKeys(false)) {
+            NPC npc = npcRegistry.getById(idSection.getInt(rank));
+            if(npc != null)
+                npc.destroy();
+        }
+        config.set(taskName + "_ids", null);
+    }
+
+    private void createNpcs(String taskName, int count) {
+        Map<Integer, UUID> topRichestPlayers = MoneyAPI.getInstance().getTopRichestPlayers(count);
+        NPCRegistry npcRegistry = CitizensAPI.getNPCRegistry();
+
+        ConfigurationSection locationSection = config.getConfigurationSection(taskName + "_locations");
+        for(String rankString : locationSection.getKeys(false)) {
+            int rank = Integer.parseInt(rankString);
+            if(!topRichestPlayers.containsKey(rank)) continue;
+
+            // name
+            UUID uuid = topRichestPlayers.get(rank);
+            String statueName = getStatueName(rank, uuid);
+
+            // coordinates
+            Location location = getLocationFromConfig(locationSection.getCurrentPath() + "." + rankString);
+            if(location == null) continue;
+
+            // create
+            NPC npc = npcRegistry.createNPC(EntityType.PLAYER, statueName);
+
+            // skin
+            String name = Bukkit.getOfflinePlayer(uuid).getName();
+            SkinTrait skinTrait = npc.getOrAddTrait(SkinTrait.class);
+            skinTrait.setSkinName(name, true);
+
+            npc.spawn(location);
+            config.set(taskName + "_ids." + rankString, npc.getId());
+        }
+
+        plugin.saveConfig();
+    }
+
+    private Location getLocationFromConfig(String path) {
+        String worldName = config.getString(path + ".world", null);
+        if(worldName == null) return null;
+        World world = Bukkit.getWorld(worldName);
+        if(world == null) return null;
+
+        double x = config.getDouble(path + ".x", 0.0);
+        double y = config.getDouble(path + ".y", 0.0);
+        double z = config.getDouble(path + ".z", 0.0);
+        return new Location(world, x, y, z);
+    }
+
+    private String getStatueName(int rank, UUID uuid) {
+        PlayerNameData playerNameData = NicknameAPI.getInstance().getPlayerNameData(uuid);
+        String name = Bukkit.getOfflinePlayer(uuid).getName();
+        if(playerNameData != null)
+            name = playerNameData.getNickname();
+
+        ChatColor prefixColor;
+        if(rank % 3 == 1)
+            prefixColor = ChatColor.GOLD;
+        else if(rank % 3 == 2)
+            prefixColor = ChatColor.DARK_GREEN;
+        else
+            prefixColor = ChatColor.WHITE;
+
+        return prefixColor.toString() + ChatColor.BOLD + "[ " + rank + "위 부자 ] " + ChatColor.WHITE + name;
+    }
+
+    private void playChurchBell(int currentHour, Location location, String sound, float volume, int seconds) {
+        new BukkitRunnable() {
+            final int totalCount = currentHour;
+            int playedCount = 1;
+
+            @Override
+            public void run() {
+                if(playedCount == totalCount)
+                    cancel();
+
+                SoundUtil.playSoundAtWorld(location, sound, volume);
+                playedCount++;
+            }
+        }.runTaskTimer(plugin, 0L, 20L * seconds);
     }
 
     private void cleanTasks(String taskName) {

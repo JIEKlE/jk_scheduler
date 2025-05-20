@@ -47,7 +47,7 @@ public class PlayerSchedulerManager {
         String worldName = player.getWorld().getName();
         if(!targetWorlds.contains(worldName)) return;
 
-        int seconds = remainingTime.containsKey(uuid) ? remainingTime.get(uuid) : config.getInt(worldName + "_warp_ticket_timer", 30) * 60;
+        int seconds = remainingTime.containsKey(uuid) ? remainingTime.get(uuid) : config.getInt(worldName + "_warp_ticket_interval", 30) * 60;
         BukkitTask task = new BukkitRunnable() {
             int remaining = seconds;
 

@@ -16,7 +16,7 @@ wealthy_statue_create_activate: false
 wealthy_statue_create_interval: 1
 wealthy_statue_create_last_date: 20250520 030000
 wealthy_statue_create_locations: {}
-wealthy_statue_create_names: {}
+wealthy_statue_create_ids: {}
 
 # 정각 타종음
 church_bell_sound_activate: false
@@ -26,8 +26,8 @@ church_bell_sound_volume: 10.0
 church_bell_sound_length: 2
 
 # 이동권 주기 (단위 : 분)
-wild_warp_ticket_timer: 30
-hell_warp_ticket_timer: 30
+wild_warp_ticket_interval: 30
+hell_warp_ticket_interval: 30
 
 # 이동권 남은 시간
 remaining_time: {}

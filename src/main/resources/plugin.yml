@@ -4,7 +4,7 @@ main: jiekie.scheduler.SchedulerPlugin
 api-version: '1.20'
 authors: [Jiekie]
 description: 스케줄러 플러그인
-depend: [jk_clean, jk_multi_world, jk_teleport]
+depend: [jk_clean, jk_multi_world, jk_teleport, Citizens]
 commands:
   배치:
     description: 배치 설정 명령어
