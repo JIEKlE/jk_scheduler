@@ -4,6 +4,7 @@ import jiekie.scheduler.SchedulerPlugin;
 import jiekie.scheduler.exception.SchedulerException;
 import jiekie.scheduler.util.ChatUtil;
 import jiekie.scheduler.util.SoundUtil;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -49,6 +50,18 @@ public class SchedulerCommand implements CommandExecutor {
 
             case "시각설정":
                 setTime(player, args);
+                break;
+
+            case "좌표설정":
+                setLocation(player, args);
+                break;
+
+            case "효과음설정":
+                setSoundEffect(player, args);
+                break;
+
+            case "동상좌표설정":
+                setStatueLocation(player, args);
                 break;
 
             case "정보":
@@ -109,6 +122,54 @@ public class SchedulerCommand implements CommandExecutor {
         try {
             plugin.getSchedulerManager().setTime(args[1], args[2]);
             ChatUtil.showMessage(player, ChatUtil.SET_TIME);
+            SoundUtil.playNoteBlockBell(player);
+
+        } catch (SchedulerException e) {
+            ChatUtil.showMessage(player, e.getMessage());
+        }
+    }
+
+    private void setLocation(Player player, String[] args) {
+        if(args.length < 5) {
+            player.sendMessage(ChatUtil.wrongCommand() + " (/배치 좌표설정 항목 x y z)");
+            return;
+        }
+
+        try {
+            plugin.getSchedulerManager().setLocation(args[1], player.getWorld(), args[2], args[3], args[4]);
+            ChatUtil.showMessage(player, ChatUtil.SET_LOCATION);
+            SoundUtil.playNoteBlockBell(player);
+
+        } catch (SchedulerException e) {
+            ChatUtil.showMessage(player, e.getMessage());
+        }
+    }
+
+    private void setSoundEffect(Player player, String[] args) {
+        if(args.length < 5) {
+            player.sendMessage(ChatUtil.wrongCommand() + " (/배치 효과음설정 항목 사운드 볼륨 음악길이(초))");
+            return;
+        }
+
+        try {
+            plugin.getSchedulerManager().setSoundEffect(args[1], args[2], args[3], args[4]);
+            ChatUtil.showMessage(player, ChatUtil.SET_SOUND_EFFECT);
+            SoundUtil.playNoteBlockBell(player);
+
+        } catch (SchedulerException e) {
+            ChatUtil.showMessage(player, e.getMessage());
+        }
+    }
+
+    private void setStatueLocation(Player player, String[] args) {
+        if(args.length < 5) {
+            player.sendMessage(ChatUtil.wrongCommand() + " (/배치 동상좌표설정 순위 x y z)");
+            return;
+        }
+
+        try {
+            plugin.getSchedulerManager().setStatueLocation(args[1], player.getWorld(), args[2], args[3], args[4]);
+            ChatUtil.showMessage(player, ChatUtil.SET_STATUE_LOCATION);
             SoundUtil.playNoteBlockBell(player);
 
         } catch (SchedulerException e) {

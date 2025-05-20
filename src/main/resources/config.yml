@@ -14,6 +14,16 @@ clean_interval: 30
 # 부자 동상 생성 주기 (단위 : 일)
 wealthy_statue_create_activate: false
 wealthy_statue_create_interval: 1
+wealthy_statue_create_last_date: 20250520 030000
+wealthy_statue_create_locations: {}
+wealthy_statue_create_names: {}
+
+# 정각 타종음
+church_bell_sound_activate: false
+church_bell_sound_location: {}
+church_bell_sound_name: sepia_film_sounds:sound_effect.tower_bell
+church_bell_sound_volume: 10.0
+church_bell_sound_length: 2
 
 # 이동권 주기 (단위 : 분)
 wild_warp_ticket_timer: 30
