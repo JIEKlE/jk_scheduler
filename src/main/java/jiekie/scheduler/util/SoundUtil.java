@@ -11,7 +11,7 @@ public class SoundUtil {
     }
 
     public static void playClockTicking(Player player) {
-        player.playSound(player.getLocation(), "sepia_film_sounds:sound_effect.clock_ticking", SoundCategory.MASTER, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), "minecraft:jk.clock_ticking", SoundCategory.MASTER, 1.0f, 1.0f);
     }
 
     public static void playSoundAtWorld(Location location, String sound, float volume) {

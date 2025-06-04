@@ -172,8 +172,8 @@ public class SchedulerManager {
         player.sendMessage("　정각 타종음 : " + activateMessage);
         player.sendMessage("　");
 
-        player.sendMessage("　야생 이용 시간 : " + config.getInt("wild_warp_ticket_timer", 30) + "분");
-        player.sendMessage("　지옥 이용 시간 : " + config.getInt("hell_warp_ticket_timer", 30) + "분");
+        player.sendMessage("　야생 이용 시간 : " + config.getInt("wild_warp_ticket_interval", 30) + "분");
+        player.sendMessage("　지옥 이용 시간 : " + config.getInt("hell_warp_ticket_interval", 30) + "분");
     }
 
     private void worldReset() {
@@ -434,6 +434,7 @@ public class SchedulerManager {
 
             // create
             NPC npc = npcRegistry.createNPC(EntityType.PLAYER, statueName);
+            npc.data().setPersistent(NPC.Metadata.NAMEPLATE_VISIBLE, true);
 
             // skin
             String name = Bukkit.getOfflinePlayer(uuid).getName();
